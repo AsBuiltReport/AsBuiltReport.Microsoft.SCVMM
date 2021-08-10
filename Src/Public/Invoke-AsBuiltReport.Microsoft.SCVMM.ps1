@@ -29,30 +29,35 @@ function Invoke-AsBuiltReport.Microsoft.SCVMM {
     # Used to set values to TitleCase where required
     $TextInfo = (Get-Culture).TextInfo
 
-	# Update/rename the $System variable and build out your code within the ForEach loop. The ForEach loop enables AsBuiltReport to generate an as built configuration against multiple defined targets.
+	# Update/rename the $VmmServer variable and build out your code within the ForEach loop. The ForEach loop enables AsBuiltReport to generate an as built configuration against multiple defined targets.
 
     #region foreach loop
-    foreach ($System in $Target) {
-        $ConnectVmmServer = Get-SCVMMServer -ComputerName $IP -Credential $Credential
+    foreach ($Server in $Target) {
+        $ConnectVmmServer = Get-SCVMMServer -ComputerName $Server -Credential $Credential
+		Write-Verbose "`VMM Server [$($ConnectVmmServer.name)] connection status is [$($ConnectVmmServer.IsConnected)]"
         Section -Style Heading1 'Virtual Machine Manager Server' {
-            $ManagedServers = Get-SCVMMManagedComputer
-            $VMMServer = $ManagedServers | Where-Object {$_.RoleString -like "*VMM Server*"}
-            $VMM = Get-SCVMMServer -ComputerName ($VMMServer.FQDN)
-            $VMMFQDN = $VMMServer.FQDN
+            $VMM = $ConnectVmmServer
+            $vmmCim = New-CimSession -ComputerName ($VMM.FQDN) -Credential $Credential
+            $VMMFQDN = $VMM.FQDN
 
             Paragraph "The following section details the configuration of SCVMM server $VMMFQDN."
 
-            Section -Style Heading2 $VMMServer.FQDN {
-                $VmmServerSettingsReport = [PSCustomObject]@{
-                    'Server FQDN' = $VMMServer.FQDN
-                    'IP Address' = (Get-NetIPAddress -CimSession $VMMServer.FQDN -AddressFamily IPv4 | Where-Object {$_.IPAddress -notlike "127.0.0.1"}).IPAddress
+            Section -Style Heading2 $VMMFQDN  {
+                $VMMServerSettingsReport = [PSCustomObject]@{
+                    'Server FQDN' = $VMMFQDN
+                    'IP Address' = (Get-NetIPAddress -CimSession $vmmCim -AddressFamily IPv4 | Where-Object {$_.IPAddress -notlike "127.0.0.1"}).IPAddress
                     'Product Version' = $VMM.ProductVersion
                     'Server Port' = $VMM.Port
                     'VM Connect Port' = $VMM.VMConnectDefaultPort
                     'VMM Service Account' = $VMM.VMMServiceAccount
                     'VMM High Availability' = $VMM.IsHighlyAvailable
                 }
-                $VMMServerSettingsReport | Table -Name 'VMM Server Settings' -List -ColumnWidths 50,50
+                $TableParams = @{
+                    Name = 'VMM Server Settings'
+                    List = $true
+                    ColumnWidths = 50,50
+                }
+                $VMMServerSettingsReport | Table $TableParams
             }
             Section -Style Heading3 'VMM Database Settings' {
                 $VMMDBSettingsReport = [PSCustomObject]@{
@@ -73,7 +78,6 @@ function Invoke-AsBuiltReport.Microsoft.SCVMM {
                 $VMMAutoNetworkSettingsReport | Table -Name 'VMM Server Settings' -List -ColumnWidths 50,50
             }
         }
-
         Section -Style Heading1 'VMM Networking' {
             Paragraph 'The following section contains as built for Logical Networks, Logical Switches, Port Profiles and VM Networks'
             Section -Style Heading2 'Logical Networks' {
@@ -109,48 +113,54 @@ function Invoke-AsBuiltReport.Microsoft.SCVMM {
             Section -Style Heading2 'Logical Switches'{
                 Paragraph 'The following section contains as-built for Logical Switches'
                 $LogicalSwitches = Get-SCLogicalSwitch
-                $LogicalSwitchesReport = @()
-                ForEach($TempPssSessionwitch in $LogicalSwitches){
-                    $TempLogicalSwitchesReport = [PSCustomObject]@{
-                        'Name' = $TempPssSessionwitch.Name
-                        'Uplink Mode' = $TempPssSessionwitch.UplinkMode
-                        'Minimum Bandwidth Mode' = $TempPssSessionwitch.MinimumMandwidthMode
+                if($LogicalSwitches){
+                    $LogicalSwitchesReport = @()
+                    ForEach($TempPssSessionwitch in $LogicalSwitches){
+                        $TempLogicalSwitchesReport = [PSCustomObject]@{
+                            'Name' = $TempPssSessionwitch.Name
+                            'Uplink Mode' = $TempPssSessionwitch.UplinkMode
+                            'Minimum Bandwidth Mode' = $TempPssSessionwitch.MinimumMandwidthMode
+                        }
+                        $LogicalSwitchesReport += $TempLogicalSwitchesReport
                     }
-                    $LogicalSwitchesReport += $TempLogicalSwitchesReport
+                    $LogicalSwitchesReport | Table -Name 'LogicalSwitches'
                 }
-                $LogicalSwitchesReport | Table -Name 'LogicalSwitches'
             }
             Section -Style Heading2 'Uplink Port Profiles'{
                 Paragraph 'The following section contains as-built for Uplink Port Profiles'
                 $UplinkPortProfile = Get-SCNativeUplinkPortProfile
-                $UplinkReport = $UplinkPortProfile | Select-Object Name, `
-                @{L='Team Mode'; E={$_.LBFOTeamMode}}, `
-                @{L='Load Balance'; E={$_LBFOLoadBalancingAlgorithm}}
-                $UplinkReport | Table -Name 'Uplink Port Profiles'
+                if($UplinkPortProfle){
+                    $UplinkReport = $UplinkPortProfile | Select-Object Name, `
+                    @{L='Team Mode'; E={$_.LBFOTeamMode}}, `
+                    @{L='Load Balance'; E={$_LBFOLoadBalancingAlgorithm}}
+                    $UplinkReport | Table -Name 'Uplink Port Profiles'
+                }
             }
             Section -Style Heading2 'Network Adapter Port Profiles' {
                 Paragraph 'The following section details Virtual Network Adapter Port Profiles'
                 $VirtualNetworkAdapterPortProfiles = Get-SCVirtualNetworkAdapterNativePortProfile
-                foreach($adapter in $VirtualNetworkAdapterPortProfiles){
-                    Section -Style Heading3 ($adapter.Name) {
-                        Paragraph ($adapter.Description)
-                        $AdapterReport = [PSCustomObject]@{
-                            'Teaming' = $adapter.AllowTeaming
-                            'Mac Address Spoofing' = $adapter.AllowMacAddressSpoofing
-                            'Ieee Priority Tagging' = $adapter.AllowIeeePriorityTagging
-                            'DHCP Guard' = $adapter.EnableDHCPGuard
-                            'Guest IP Network Virtualization Updates' = $adapter.EnableGuestIPNetworkVirtualizationUpdates
-                            'Router Guard' = $adapter.EnableRouterGuard
-                            'Minimum Bandwidth Weight' = $adapter.MinimumBandwidthWeight
-                            'Minimum Bandwidth Absolute In Mbps' = $adapter.MinimumBandwidthAbsoluteInMbps
-                            'Maximum Bandwidth Absolute In Mbps' = $adapter.MaximumBandwidthAbsoluteInMbps
-                            'Enable Vmq' = $adapter.EnableVmq
-                            'Enable IPsec Offload' = $adapter.EnableIPsecOffload
-                            'Enable Iov' = $adapter.EnableIov
-                            'Enable Vrss' = $adapter.EnableVrss
-                            'Enable Rdma' = $adapter.EnableRdma
+                if($VirtualNetworkAdapterPortProfiles){
+                    foreach($adapter in $VirtualNetworkAdapterPortProfiles){
+                        Section -Style Heading3 ($adapter.Name) {
+                            Paragraph ($adapter.Description)
+                            $AdapterReport = [PSCustomObject]@{
+                                'Teaming' = $adapter.AllowTeaming
+                                'Mac Address Spoofing' = $adapter.AllowMacAddressSpoofing
+                                'Ieee Priority Tagging' = $adapter.AllowIeeePriorityTagging
+                                'DHCP Guard' = $adapter.EnableDHCPGuard
+                                'Guest IP Network Virtualization Updates' = $adapter.EnableGuestIPNetworkVirtualizationUpdates
+                                'Router Guard' = $adapter.EnableRouterGuard
+                                'Minimum Bandwidth Weight' = $adapter.MinimumBandwidthWeight
+                                'Minimum Bandwidth Absolute In Mbps' = $adapter.MinimumBandwidthAbsoluteInMbps
+                                'Maximum Bandwidth Absolute In Mbps' = $adapter.MaximumBandwidthAbsoluteInMbps
+                                'Enable Vmq' = $adapter.EnableVmq
+                                'Enable IPsec Offload' = $adapter.EnableIPsecOffload
+                                'Enable Iov' = $adapter.EnableIov
+                                'Enable Vrss' = $adapter.EnableVrss
+                                'Enable Rdma' = $adapter.EnableRdma
+                            }
+                            $AdapterReport | Table -Name ($adapter.'Name') -List -ColumnWidths 50,50
                         }
-                        $AdapterReport | Table -Name ($adapter.'Name') -List -ColumnWidths 50,50
                     }
                 }
             }
@@ -160,7 +170,6 @@ function Invoke-AsBuiltReport.Microsoft.SCVMM {
                 $PortClassifications | Select-Object Name, Description | Table -Name 'Port Classifications'
             }
         }
-
         Section -Style Heading1 'VMM Library and Templates'{
             Paragraph 'The following section details the Library and VM Templates configured'
             Section -Style Heading2 'VMM Library Servers'{
@@ -176,7 +185,9 @@ function Invoke-AsBuiltReport.Microsoft.SCVMM {
             Section -Style Heading2 'VMM Templates'{
                 Paragraph 'The following table is a summary of VM Templates Deployed'
                 $VMTemplates = Get-SCVMTemplate
-                $VMTemplates | Select-Object Name,OperatingSystem,Description | Table -Name 'VMM Templates' -ColumnWidths 20,20,60
+                if($VMTemplates){
+                    $VMTemplates | Select-Object Name,OperatingSystem,Description | Table -Name 'VMM Templates' -ColumnWidths 20,20,60
+                }
             }
             Section -Style Heading2 'Guest OS Profiles'{
                 Paragraph 'The following table is a summary of the Guest OS Profiles Deployed'
@@ -186,10 +197,11 @@ function Invoke-AsBuiltReport.Microsoft.SCVMM {
             Section -Style Heading2 'Hardware Profiles'{
                 Paragraph 'The following table is a summary of deployed Hardware Profiles'
                 $HardwareProfiles = Get-SCHardwareProfile
-                $HardwareProfiles | Select-Object Name,CPUCount,Memory,IsHighlyAvailable,SecureBootEnabled | Table -Name 'Hardware Profiles'
+                if($HardwareProfiles){
+                    $HardwareProfiles | Select-Object Name,CPUCount,Memory,IsHighlyAvailable,SecureBootEnabled | Table -Name 'Hardware Profiles'
+                }
             }
         }
-
         Section -Style Heading1 'Clusters' {
             Paragraph 'The following section details Hyper-V Clusters'
             $ScVmmClusters = Get-SCVMHostCluster
@@ -349,40 +361,41 @@ function Invoke-AsBuiltReport.Microsoft.SCVMM {
                         Section -Style Heading4 'Cluster Shared Volumes'{
                             Paragraph 'The following Cluster Shared Volumes are Configure'
                             $ClusterVolumes = $Cluster | Get-ClusterSharedVolume
-                            $ClusterVolumeReport = @()
-                            foreach($ClusterVolume in $ClusterVolumes){
-                                $TempClusterVolume = [PSCustomObject] @{
-                                    'Name' = $ClusterVolume.Name
-                                    'State' = $ClusterVolume.State
-                                    'File System Type' = $ClusterVolume.SharedVolumeInfo.Partition.FileSystem
-                                    'Volume Capacity(GB)' = [Math]::Round(($ClusterVolume.SharedVolumeInfo.Partition.Size)/1gb)
-                                    'Free Fapacity(GB)' = [Math]::Round(($ClusterVolume.SharedVolumeInfo.Partition.FreeSpace)/1gb)
+                            if($ClusterVolumes){
+                                $ClusterVolumeReport = @()
+                                foreach($ClusterVolume in $ClusterVolumes){
+                                    $TempClusterVolume = [PSCustomObject] @{
+                                        'Name' = $ClusterVolume.Name
+                                        'State' = $ClusterVolume.State
+                                        'File System Type' = $ClusterVolume.SharedVolumeInfo.Partition.FileSystem
+                                        'Volume Capacity(GB)' = [Math]::Round(($ClusterVolume.SharedVolumeInfo.Partition.Size)/1gb)
+                                        'Free Fapacity(GB)' = [Math]::Round(($ClusterVolume.SharedVolumeInfo.Partition.FreeSpace)/1gb)
+                                    }
+                                    $ClusterVolumeReport += $TempClusterVolume
                                 }
-                                $ClusterVolumeReport += $TempClusterVolume
+                                $ClusterVolumeReport | Table -Name 'Cluster Volumes'
                             }
-                            $ClusterVolumeReport | Table -Name 'Cluster Volumes'
                         }
                         #Cluster Hyper-V Replica Broker
                     }
                 }
             }
         }
-
         Section -Style Heading1 'Hyper-V Hosts'{
             Paragraph 'The following table details the Hyper-V hosts'
-            $VMHosts = Get-SCVMHost | Sort-Object Name
+            $VMHosts = Get-SCVMHost -VMMServer $ConnectVmmServer | Sort-Object Name
             $VMHostSummary = $VMHosts | Select-Object ComputerName,OperatingSystem,VMHostGroup
             $VMHostSummary | Table -Name 'VM Host Summary'
             #Host Summary
             ForEach($VMHost in $VMHosts){
                 #Create Remote Sessions
-                $TempPssSession = New-PSSession $VMHost.Name
-                $TempCimSession = New-CimSession $VMHost.Name
+                $TempPssSession = New-PSSession $VMHost.Name -Credential $Credential
+                $TempCimSession = New-CimSession $VMHost.Name -Credential $Credential
                 #Get Server Data using WinRM
                 $HostInfo = Invoke-Command -Session $TempPssSession {Get-ComputerInfo}
                 $HostCPU = Get-CimInstance -CimSession $TempCimSession -ClassName Win32_Processor
                 $HostComputer = Get-CimInstance -CimSession $TempCimSession -ClassName Win32_ComputerSystem
-                $HostBIOS = Get-CimInstance -CimSession $TempCimSession -ClassName Win32_Bios -ComputerName $VMHost.ComputerName
+                $HostBIOS = Get-CimInstance -CimSession $TempCimSession -ClassName Win32_Bios
                 $HostLicense = Get-CimInstance -CimSession $TempCimSession -query 'Select * from SoftwareLicensingProduct'| Where-Object {$_.LicenseStatus -eq 1}
                 $HotFixes = Get-CimInstance -CimSession $TempCimSession -ClassName Win32_QuickFixEngineering
                 Section -Style Heading2 ($VMHost.Name){
@@ -454,7 +467,7 @@ function Invoke-AsBuiltReport.Microsoft.SCVMM {
                         #Host Roles and Features
                         Section -Style Heading4 'Roles and Features' {
                             Paragraph 'The following settings details host roles and features installed'
-                            $HostRolesAndFeatures = Get-WindowsFeature -ComputerName  $VMHost.Name | Where-Object {$_.Installed -eq $True}
+                            $HostRolesAndFeatures = Get-WindowsFeature -ComputerName $VMHost.Name -Credential $Credential | Where-Object {$_.Installed -eq $True}
                             [array]$HostRolesAndFeaturesReport = @()
                             ForEach($HostRoleAndFeature in $HostRolesAndFeatures){
                                 $TempHostRolesAndFeaturesReport = [PSCustomObject] @{
@@ -641,7 +654,7 @@ function Invoke-AsBuiltReport.Microsoft.SCVMM {
                         #Local Disks
                         Section -Style Heading4 'Local Disks'{
                             Paragraph 'The following table details physical disks installed in the host'
-                            $HostDisks = Invoke-Command -Session $TempPssSession -ScriptBlock {Get-Disk | Where-Object -FilterScript {$_.BusType -Eq "RAID" -or $_.BusType -eq "File Backed Virtual"}}
+                            $HostDisks = Invoke-Command -Session $TempPssSession -ScriptBlock {Get-Disk | Where-Object -FilterScript {$_.BusType -Eq "RAID" -or $_.BusType -eq "File Backed Virtual" -or $_.BusType -eq "SATA" -or $_.BusType -eq "USB"}}
                             $LocalDiskReport = @()
                             ForEach($Disk in $HostDisks){
                                 $TempLocalDiskReport = [PSCustomObject]@{
@@ -747,6 +760,103 @@ function Invoke-AsBuiltReport.Microsoft.SCVMM {
                                     Paragraph 'The following table details the hardware detected and claimed by MPIO'
                                     $MpioAvailableHw = Invoke-Command -Session $TempPssSession -ScriptBlock {Get-MPIOAvailableHw}
                                     $MpioAvailableHw | Select-Object VendorId,ProductId,BusType,IsMultipathed | Table -Name 'MPIO Available Hardware'
+                                }
+                            }
+                        }
+                    }
+                    #HyperV Configuration
+                    $HyperVInstalledCheck = Invoke-Command -Session $TempPssSession { Get-WindowsFeature | Where-Object { $_.Name -like "*Hyper-V*" } }
+                    if ($HyperVInstalledCheck.InstallState -eq "Installed") {
+                        Section -Style Heading4 "Hyper-V Configuration Settings" {
+                            Paragraph 'The following table details the Hyper-V Server Settings'
+                            $VmHost = Invoke-Command -Session $TempPssSession { Get-VMHost }
+                            $VmHostReport = [PSCustomObject]@{
+                                'Logical Processor Count' = $VmHost.LogicalProcessorCount
+                                'Memory Capacity (GB)' = [Math]::Round($VmHost.MemoryCapacity / 1gb)
+                                'VM Default Path' = $VmHost.VirtualMachinePath
+                                'VM Disk Default Path' = $VmHost.VirtualHardDiskPath
+                                'Supported VM Versions' = $VmHost.SupportedVmVersions -Join ","
+                                'Numa Spannning Enabled' = $VmHost.NumaSpanningEnabled
+                                'Iov Support' = $VmHost.IovSupport
+                                'VM Migrations Enabled' = $VmHost.VirtualMachineMigrationEnabled
+                                'Allow any network for Migrations' = $VmHost.UseAnyNetworkForMigrations
+                                'VM Migration Authentication Type' = $VmHost.VirtualMachineMigrationAuthenticationType
+                                'Max Concurrent Storage Migrations' = $VmHost.MaximumStorageMigrations
+                                'Max Concurrent VM Migrations' = $VmHost.MaximumStorageMigrations
+                            }
+                            $VmHostReport | Table -Name 'Hyper-V Host Settings' -List -ColumnWidths 50, 50
+                            Section -Style Heading5 "Hyper-V NUMA Boundaries" {
+                                Paragraph 'The following table details the NUMA nodes on the host'
+                                $VmHostNumaNodes = Get-VMHostNumaNode -CimSession $TempCimSession
+                                [array]$VmHostNumaReport = @()
+                                foreach ($Node in $VmHostNumaNodes) {
+                                    $TempVmHostNumaReport = [PSCustomObject]@{
+                                        'Numa Node Id' = $Node.NodeId
+                                        'Memory Available(GB)' = $Node.MemoryAvailable
+                                        'Memory Total(GB)' = $Node.MemoryTotal
+                                    }
+                                    $VmHostNumaReport += $TempVmHostNumaReport
+                                }
+                                $VmHostNumaReport | Table -Name 'Host NUMA Nodes'
+                            }
+                            Section -Style Heading5 "Hyper-V MAC Pool settings" {
+                                'The following table details the Hyper-V MAC Pool'
+                                $VmHostMacPool = [PSCustomObject]@{
+                                'Mac Address Minimum' = $VmHost.MacAddressMinimum
+                                'Mac Address Maximum' = $VmHost.MacAddressMaximum
+                            }
+                            $VmHostMacPool | Table -Name 'MAC Address Pool' -ColumnWidths 50, 50
+                            }
+                            Section -Style Heading5 "Hyper-V Management OS Adapters" {
+                                Paragraph 'The following table details the Management OS Virtual Adapters created on Virtual Switches'
+                                $VmOsAdapters = Get-VMNetworkAdapter -CimSession $TempCimSession -ManagementOS
+                                $VmOsAdapterReport = @()
+                                Foreach ($VmOsAdapter in $VmOsAdapters) {
+                                    $AdapterVlan = Get-VMNetworkAdapterVlan -CimSession $TempCimSession -ManagementOS -VMNetworkAdapterName $VmOsAdapter.Name
+                                    $TempVmOsAdapterReport = [PSCustomObject]@{
+                                        'Name' = $VmOsAdapter.Name
+                                        'Switch Name' = $VmOsAdapter.SwitchName
+                                        'Mac Address' = $VmOsAdapter.MacAddress
+                                        'IPv4 Address' = $VmOsAdapter.IPAddresses -Join ","
+                                        'Adapter Mode' = $AdapterVlan.OperationMode
+                                        'Vlan ID' = $AdapterVlan.AccessVlanId
+                                    }
+                                    $VmOsAdapterReport += $TempVmOsAdapterReport
+                                }
+                                $VmOsAdapterReport | Table -Name 'VM Management OS Adapters'
+                            }
+                            Section -Style Heading5 "Hyper-V vSwitch Settings" {
+                                Paragraph 'The following table details the Hyper-V vSwitches configured'
+                                $VmSwitches = Invoke-Command -Session $TempPssSession { Get-VMSwitch }
+                                $VmSwitchesReport = @()
+                                ForEach ($VmSwitch in $VmSwitches) {
+                                    $TempVmSwitchesReport = [PSCustomObject]@{
+                                        'Switch Name' = $VmSwitch.Name
+                                        'Switch Type' = $VmSwitch.SwitchType
+                                        'Embedded Team' = $VmSwitch.EmbeddedTeamingEnabled
+                                        'Interface Description' = $VmSwitch.NetAdapterInterfaceDescription
+                                    }
+                                    $VmSwitchesReport += $TempVmSwitchesReport
+                                }
+                                $VmSwitchesReport | Table -Name 'Virtual Switch Summary' -ColumnWidths 40, 10, 10, 40
+                                Foreach ($VmSwitch in $VmSwitches) {
+                                    Section -Style Heading6 ($VmSwitch.Name) {
+                                        Paragraph 'The following table details the Hyper-V vSwitch'
+                                        $VmSwitchReport = [PSCustomObject]@{
+                                            'Switch Name' = $VmSwitch.Name
+                                            'Switch Type' = $VmSwitch.SwitchType
+                                            'Switch Embedded Teaming Status' = $VmSwitch.EmbeddedTeamingEnabled
+                                            'Bandwidth Reservation Mode' = $VmSwitch.BandwidthReservationMode
+                                            'Bandwidth Reservation Percentage' = $VmSwitch.Percentage
+                                            'Management OS Allowed' = $VmSwitch.AllowManagementOS
+                                            'Physical Adapters' = $VmSwitch.NetAdapterInterfaceDescriptions -Join ","
+                                            'IOV Support' = $VmSwitch.IovSupport
+                                            'IOV Support Reasons' = $VmSwitch.IovSupportReasons
+                                            'Available VM Queues' = $VmSwitch.AvailableVMQueues
+                                            'Packet Direct Enabled' = $VmSwitch.PacketDirectinUse
+                                        }
+                                        $VmSwitchReport | Table -Name 'VM Switch Details' -List -ColumnWidths 50, 50
+                                    }
                                 }
                             }
                         }
