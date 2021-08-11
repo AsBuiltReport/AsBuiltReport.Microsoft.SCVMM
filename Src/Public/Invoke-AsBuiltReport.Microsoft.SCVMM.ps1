@@ -792,8 +792,8 @@ function Invoke-AsBuiltReport.Microsoft.SCVMM {
                                 foreach ($Node in $VmHostNumaNodes) {
                                     $TempVmHostNumaReport = [PSCustomObject]@{
                                         'Numa Node Id' = $Node.NodeId
-                                        'Memory Available(GB)' = $Node.MemoryAvailable
-                                        'Memory Total(GB)' = $Node.MemoryTotal
+                                        'Memory Available(GB)' = ($Node.MemoryAvailable)/1024
+                                        'Memory Total(GB)' = ($Node.MemoryTotal)/1024
                                     }
                                     $VmHostNumaReport += $TempVmHostNumaReport
                                 }
