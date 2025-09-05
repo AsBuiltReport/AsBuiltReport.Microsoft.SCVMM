@@ -9,13 +9,36 @@
         "ShowTableCaptions": true
     },
     "Options": {
-
+        "VmmServerPort": 8100,
+        "EnableDiagrams": true,
+        "EnableDiagramDebug": false,
+        "DiagramTheme": "White",
+        "DiagramWaterMark": "Acme Corporation",
+        "ExportDiagrams": true,
+        "ExportDiagramsFormat": [
+            "png"
+        ],
+        "EnableDiagramSignature": false,
+        "DiagramColumnSize": 4,
+        "SignatureAuthorName": "Jonathan Colon",
+        "SignatureCompanyName": "Zen PR Solutions"
     },
     "InfoLevel": {
-		"_comment_": "Please refer to the AsBuiltReport project contributing guide for information about how to define InfoLevels.",
-        "_comment_": "0 = Disabled, 1 = Enabled / Summary, 2 = Adv Summary, 3 = Detailed, 4 = Adv Detailed, 5 = Comprehensive"
+        "_comment_": "Please refer to the AsBuiltReport project contributing guide for information about how to define InfoLevels.",
+        "_comment_": "0 = Disabled, 1 = Enabled / Summary, 2 = Adv Summary, 3 = Detailed, 4 = Adv Detailed, 5 = Comprehensive",
+        "ServerSettings": 1,
+        "DBSettings": 1,
+        "AutoNetworkSettings": 1,
+        "Networking": 1,
+        "LibraryTemplates": 1,
+        "Clusters": 1,
+        "Hosts": 1
     },
     "HealthCheck": {
-	
+        "VMMServer": true,
+        "Database": true,
+        "AutoNetwork": true,
+        "Clusters": true,
+        "Hosts": true
     }
 }

@@ -3,6 +3,24 @@
         'PSUseToExportFieldsInManifest',
         'PSReviewUnusedParameter',
         'PSUseDeclaredVarsMoreThanAssignments',
-        'PSAvoidGlobalVars'
+        'PSAvoidGlobalVars',
+        'PSAvoidUsingWriteHost'
     )
+    Rules = @{
+        PSAvoidExclaimOperator = @{
+            Enable = $true
+        }
+        AvoidUsingDoubleQuotesForConstantString = @{
+            Enable = $true
+        }
+        UseCorrectCasing = @{
+            Enable = $true
+        }
+        PSAvoidUsingCmdletAliases = @{
+            Enable = $true
+        }
+        PSUseConsistentWhitespace = @{
+            Enable = $true
+        }
+    }
 }
