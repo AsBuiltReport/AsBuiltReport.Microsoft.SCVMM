@@ -6,3 +6,4 @@
     [] Get-SCRunAsAccount
     [] Get-SCUserRole
 [] Add Cloud (Get-SCCloud)
+[] Update ReadMe file
