@@ -16,10 +16,10 @@
         "DiagramWaterMark": "",
         "ExportDiagrams": false,
         "ExportDiagramsFormat": [
-            "pdf"
+            "png"
         ],
         "EnableDiagramSignature": false,
-        "DiagramColumnSize": 4,
+        "DiagramColumnSize": 3,
         "SignatureAuthorName": "AsBuiltReport Team",
         "SignatureCompanyName": "AsBuiltReport Org."
     },

@@ -33,6 +33,7 @@ function Get-AbrVmmInfrastructure {
                         Get-AbrVmmAutoNetSetting
                         Get-AbrVmmUpdateServer
                         Get-AbrVmmLibraryServer
+                        Get-AbrVmmVirtualizationManager
                     }
                 }
             }
