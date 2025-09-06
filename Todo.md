@@ -2,9 +2,16 @@
 [] Add PXE Server
 [] Add vCenter Server
 [] Add Network Service
-[] Add configuration settings
-    [] Get-SCRunAsAccount
-    [] Get-SCUserRole
+[x] Add configuration settings
+    [x] Get-SCRunAsAccount
+    [x] Get-SCUserRole
 [] Add Cloud (Get-SCCloud)
-[] Update ReadMe file
-[] Add HostGroup (Get-SCVMHostGroup)
+[] Add Tenant
+[x] Update ReadMe file
+[x] Add HostGroup (Get-SCVMHostGroup)
+[] Add HyperV configuration (Use AsBuiltReport.Microsoft.Windows)
+[] Add FailOver Cluster Diagram
+    [] Networking
+    [] Quorum
+    [] Disk
+    [] Resources

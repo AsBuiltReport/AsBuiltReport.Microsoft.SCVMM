@@ -25,7 +25,7 @@ function Get-AbrVmmVmNetwork {
     process {
         try {
             if ($InfoLevel.Networking -gt 0) {
-                if ($VMNetworks = Get-SCVMNetwork | Sort-Object -Property Name) {
+                if ($VMNetworks = Get-SCVMNetwork -VMMServer $ConnectVmmServer | Sort-Object -Property Name) {
                     Write-PScriboMessage "Collecting VMM VM Networks information."
                     Section -Style Heading3 'VM Networks' {
                         $VmmVMNetworksInfo = @()

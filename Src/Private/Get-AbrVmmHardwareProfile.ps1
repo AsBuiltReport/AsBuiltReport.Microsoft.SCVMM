@@ -25,7 +25,7 @@ function Get-AbrVmmHardwareProfile {
     process {
         try {
             if ($InfoLevel.LibraryTemplates -gt 0) {
-                if ($HardwareProfiles = Get-SCHardwareProfile | Sort-Object -Property Name) {
+                if ($HardwareProfiles = Get-SCHardwareProfile -VMMServer $ConnectVmmServer | Sort-Object -Property Name) {
                     Write-PScriboMessage "Collecting VMM Hardware Profile information."
                     Section -Style Heading3 'Hardware Profiles' {
                         $VmmHardwareProfilesInfo = @()

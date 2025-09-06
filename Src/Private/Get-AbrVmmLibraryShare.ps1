@@ -25,7 +25,7 @@ function Get-AbrVmmLibraryShare {
     process {
         try {
             if ($InfoLevel.LibraryTemplates -gt 0) {
-                if ($LibraryShares = Get-SCLibraryShare | Sort-Object -Property Name) {
+                if ($LibraryShares = Get-SCLibraryShare -VMMServer $ConnectVmmServer | Sort-Object -Property Name) {
                     Write-PScriboMessage "Collecting VMM Library Shares information."
                     Section -Style Heading3 'Library Shares' {
                         $VmmLibrarySharesInfo = @()

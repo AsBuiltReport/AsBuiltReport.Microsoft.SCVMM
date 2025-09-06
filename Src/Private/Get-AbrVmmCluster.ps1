@@ -26,7 +26,7 @@ function Get-AbrVmmCluster {
         try {
             if ($InfoLevel.Clusters -gt 0) {
                 Write-PScriboMessage "Collecting VMM Cluster information."
-                if ($ScVmmClusters = Get-SCVMHostCluster) {
+                if ($ScVmmClusters = Get-SCVMHostCluster -VMMServer $ConnectVmmServer | Sort-Object -Property Name) {
                     Section -Style Heading1 'Clusters' {
                         Paragraph "The following table summarises the configuration of the clusters."
                         BlankLine

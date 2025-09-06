@@ -166,7 +166,7 @@ The **Options** schema allows certain options within the report to be toggled on
 | EnableDiagramsDebug    | true / false | false   | Toggle to enable/disable diagram debug option                                 |
 | EnableDiagramSignature | true / false | false   | Toggle to enable/disable diagram signature (bottom right corner)              |
 | ExportDiagrams         | true / false | true    | Toggle to enable/disable diagram export option                                |
-| ExportDiagramsFormat   | string array | png     | Set the format used to export the infrastructure diagram (dot, png, pdf, svg) |
+| ExportDiagramsFormat   | string array | pdf     | Set the format used to export the infrastructure diagram (dot, png, pdf, svg) |
 | SignatureAuthorName    | string       | empty   | Set the signature author name                                                 |
 | SignatureCompanyName   | string       | empty   | Set the signature company name                                                |
 
@@ -184,13 +184,14 @@ There are 3 levels (0-2) of detail granularity for each section as follows;
 
 The table below outlines the default and maximum **InfoLevel** settings for each section.
 
-| Sub-Schema      | Default Setting | Maximum Setting |
-| --------------- | :-------------: | :-------------: |
-| Cluster         |        1        |        1        |
-| Host            |        1        |        2        |
-| Infrastructure  |        1        |        1        |
-| LibraryTemplate |        1        |        2        |
-| Networking      |        1        |        1        |
+| Sub-Schema       | Default Setting | Maximum Setting |
+| ---------------- | :-------------: | :-------------: |
+| Clusters         |        1        |        2        |
+| Hosts            |        1        |        1        |
+| HostGroups       |        1        |        1        |
+| Infrastructures  |        1        |        2        |
+| LibraryTemplates |        1        |        2        |
+| Networking       |        1        |        2        |
 
 ### Healthcheck
 

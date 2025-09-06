@@ -25,7 +25,7 @@ function Get-AbrVmmUplinkPortProfile {
     process {
         try {
             if ($InfoLevel.Networking -gt 0) {
-                if ($UplinkPortProfiles = Get-SCNativeUplinkPortProfile | Sort-Object -Property Name) {
+                if ($UplinkPortProfiles = Get-SCNativeUplinkPortProfile -VMMServer $ConnectVmmServer | Sort-Object -Property Name) {
                     Write-PScriboMessage "Collecting VMM Uplink Port Profile information."
                     Section -Style Heading3 'Uplink Port Profiles' {
                         $VmmUplinkPortProfileInfo = @()

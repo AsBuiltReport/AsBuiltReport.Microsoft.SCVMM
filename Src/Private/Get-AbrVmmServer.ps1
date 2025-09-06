@@ -72,6 +72,8 @@ function Get-AbrVmmServer {
                             }
                             $VmmServerSettingsInfo | Table @TableParams
                         }
+                        Get-AbrVmmRunAsAccount
+                        Get-AbrVmmUserRole
                     }
                 }
             }

@@ -51,7 +51,7 @@ function Get-AbrVmmInfrastructureDiagram {
     process {
         try {
             if ($VMM) {
-                $UpdateServer = Get-SCUpdateServer
+                $UpdateServer = Get-SCUpdateServer -VMMServer $ConnectVmmServer
                 $VMMServerAdditionalInfo = [pscustomobject][Ordered]@{
                     'IP Address' = (Get-NetIPAddress -CimSession $VMMCimSession -AddressFamily IPv4 | Where-Object { $_.IPAddress -notlike "127.0.0.1" })[0].IPAddress
                     'Server Port' = $VMM.Port

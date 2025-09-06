@@ -25,7 +25,7 @@ function Get-AbrVmmVMTemplate {
     process {
         try {
             if ($InfoLevel.LibraryTemplates -gt 0) {
-                if ($VMTemplates = Get-SCVMTemplate | Sort-Object -Property Name) {
+                if ($VMTemplates = Get-SCVMTemplate -VMMServer $ConnectVmmServer | Sort-Object -Property Name) {
                     Write-PScriboMessage "Collecting VMM VM Templates information."
                     Section -Style Heading3 'VM Templates' {
                         $VmmVMTemplatesInfo = @()

@@ -25,7 +25,7 @@ function Get-AbrVmmPortClassification {
     process {
         try {
             if ($InfoLevel.Networking -gt 0) {
-                if ($PortClassifications = Get-SCPortClassification | Sort-Object -Property Name) {
+                if ($PortClassifications = Get-SCPortClassification -VMMServer $ConnectVmmServer | Sort-Object -Property Name) {
                     Write-PScriboMessage "Collecting VMM Port Classification information."
                     Section -Style Heading3 'Port Classifications' {
                         $VmmPortClassificationInfo = @()

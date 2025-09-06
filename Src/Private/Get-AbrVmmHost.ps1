@@ -1,7 +1,7 @@
 function Get-AbrVmmHost {
     <#
     .SYNOPSIS
-        Used by As Built Report to retrieve Microsoft SCVMM Hosts information
+        Used by As Built Report to retrieve Microsoft SCVMM Host Summary information
     .DESCRIPTION
 
     .NOTES
@@ -19,18 +19,37 @@ function Get-AbrVmmHost {
     )
 
     begin {
-        Write-PScriboMessage "Networking InfoLevel set at $($InfoLevel.Hosts)."
+        Write-PScriboMessage "Hosts InfoLevel set at $($InfoLevel.Hosts)."
     }
 
     process {
         try {
             if ($InfoLevel.Hosts -gt 0) {
-                Write-PScriboMessage "Collecting VMM Host information."
-                if ($ScVmmHosts = Get-SCVMHost) {
-                    Section -Style Heading1 'Hosts' {
-                        Paragraph "The following table summarises the configuration of the hosts."
+                if ($VMHosts = Get-SCVMHost -VMMServer $ConnectVmmServer | Sort-Object -Property Name) {
+                    Section -Style Heading2 'Hosts' {
+                        Paragraph "The following table summarises the configuration of the vmm hosts."
                         BlankLine
-                        Get-AbrVmmHostSummary
+                        Write-PScriboMessage "Collecting VMM Host information."
+                        $VmmHostInfo = @()
+                        foreach ($VMHost in $VMHosts) {
+                            $InObj = [Ordered]@{
+                                'Name' = $VMHost.ComputerName
+                                'Operating System' = $VMHost.OperatingSystem
+                                'Host Group' = $VMHost.VMHostGroup
+                            }
+
+                            $VmmHostInfo += [pscustomobject](ConvertTo-HashToYN $InObj)
+                        }
+
+                        $TableParams = @{
+                            Name = "Host Summary - $($Vmm.FQDN)"
+                            List = $false
+                            ColumnWidths = 33, 33, 34
+                        }
+                        if ($Report.ShowTableCaptions) {
+                            $TableParams['Caption'] = "- $($TableParams.Name)"
+                        }
+                        $VmmHostInfo | Table @TableParams
                     }
                 }
             }

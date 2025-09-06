@@ -25,7 +25,7 @@ function Get-AbrVmmLibraryServer {
     process {
         try {
             if ($InfoLevel.LibraryTemplates -gt 0) {
-                if ($VMLibraries = Get-SCLibraryServer | Sort-Object -Property Name) {
+                if ($VMLibraries = Get-SCLibraryServer -VMMServer $ConnectVmmServer | Sort-Object -Property Name) {
                     Write-PScriboMessage "Collecting VMM Library Servers information."
                     Section -Style Heading3 'Library Servers' {
                         $VmmLibraryServersInfo = @()
@@ -45,6 +45,10 @@ function Get-AbrVmmLibraryServer {
                             }
 
                             $VmmLibraryServersInfo += [pscustomobject](ConvertTo-HashToYN $InObj)
+                        }
+
+                        if ($HealthCheck.Infrastructure) {
+                            $VmmLibraryServersInfo | Where-Object { $_.'Status' -ne 'Responding' } | Set-Style -Style Warning -Property 'Status'
                         }
 
                         if ($InfoLevel.LibraryTemplates -ge 2) {
@@ -69,7 +73,7 @@ function Get-AbrVmmLibraryServer {
                                 Name = "Library Servers - $($Vmm.FQDN)"
                                 List = $false
                                 Columns = 'Name', 'Description', 'Status'
-                                ColumnWidths = 42, 42, 16
+                                ColumnWidths = 40, 40, 20
                             }
                             if ($Report.ShowTableCaptions) {
                                 $TableParams['Caption'] = "- $($TableParams.Name)"
