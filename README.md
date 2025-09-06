@@ -57,11 +57,11 @@ This report is compatible with the following PowerShell versions;
 <!-- ********** Update supported PowerShell versions ********** -->
 | Windows PowerShell 5.1 |    PowerShell 7    |
 | :--------------------: | :----------------: |
-|   :white_check_mark:   | :white_check_mark: |
+|   :white_check_mark:   | :x: |
 
 ## :wrench: System Requirements
 <!-- ********** Update system requirements ********** -->
-PowerShell 5.1/7 and the following PowerShell modules are required for generating a Microsoft SCVMM As Built report.
+PowerShell 5.1 and the following PowerShell modules are required for generating a Microsoft SCVMM As Built report.
 
 - [AsBuiltReport.Microsoft.SCVMM Module](https://www.powershellgallery.com/packages/AsBuiltReport.Microsoft.SCVMM/)
 - [Hyper-V Module](https://docs.microsoft.com/en-us/powershell/module/hyper-v/?view=windowsserver2022-ps)
@@ -81,7 +81,7 @@ A Microsoft SCVMM As Built Report can be generated with Administrator level role
 
 The installation of the modules will depend on the roles that are being served on the server to be documented.
 
-### PowerShell v5.x running on a Windows server (Target)
+### PowerShell v5.x running on a Windows server (VMM server)
 
 ```powershell
 Install-Module AsBuiltReport.Microsoft.SCVMM
@@ -91,18 +91,6 @@ Install-WindowsFeature -Name Hyper-V-PowerShell
 
 # FailOver Cluster powershell modules
 Install-WindowsFeature -Name RSAT-Clustering-PowerShell
-```
-
-### PowerShell v5.x running on Windows client computer (Target)
-<!-- ********** Add installation for any additional PowerShell module(s) ********** -->
-```powershell
-Install-Module AsBuiltReport.Microsoft.SCVMM
-
-#FailOver Cluster powershell modules
-Add-WindowsCapability -Online -Name 'Rsat.FailoverCluster.Management.Tools~~~~0.0.1.0'
-
-# Hyper-V Server powershell modules
-Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-Management-PowerShell
 ```
 
 ### GitHub

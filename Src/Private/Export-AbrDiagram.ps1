@@ -24,7 +24,8 @@ function Export-AbrDiagram {
         $DiagramObject,
         [string] $MainDiagramLabel = 'Change Me',
         [Parameter(Mandatory = $true)]
-        [string] $FileName
+        [string] $FileName,
+        [string] $Orientation = 'Portrait'
     )
 
     begin {
@@ -116,8 +117,8 @@ function Export-AbrDiagram {
                 $Graph = $DiagramObject
                 $Diagram = New-Diagrammer @DiagramParams -InputObject $Graph
                 if ($Diagram) {
-                    if ((Get-DiaImagePercent -GraphObj $Diagram).Width -gt 600) { $ImagePrty = 40 } else { $ImagePrty = 30 }
-                    Section -Style Heading2 $MainDiagramLabel {
+                    if ((Get-DiaImagePercent -GraphObj $Diagram).Width -gt 600) { $ImagePrty = 30 } else { $ImagePrty = 50 }
+                    Section -Style Heading2 $MainDiagramLabel -Orientation $Orientation {
                         Image -Base64 $Diagram -Text "$MainDiagramLabel" -Percent $ImagePrty -Align Center
                         Paragraph "Image preview: Opens the image in a new tab to view it at full resolution." -Tabs 2
                     }

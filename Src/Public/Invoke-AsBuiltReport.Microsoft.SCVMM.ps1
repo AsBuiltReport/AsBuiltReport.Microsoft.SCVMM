@@ -74,6 +74,11 @@ function Invoke-AsBuiltReport.Microsoft.SCVMM {
 
     #region foreach loop
     foreach ($Server in $Target) {
+
+        if (Select-String -InputObject $System -Pattern "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$") {
+            throw "Please use the Fully Qualified Domain Name (FQDN) instead of an IP address when connecting to the Domain Controller: $System"
+        }
+
         # Establish initial connection to VMM server
         Get-AbrVmmServerConnection
 
@@ -91,19 +96,17 @@ function Invoke-AsBuiltReport.Microsoft.SCVMM {
         Write-Verbose "`VMM Server [$($VMM.name)] connection status is [$($VMM.IsConnected)]"
         Section -Style Heading1 $($VMM.FQDN) {
             Paragraph "The following section details the configuration of SCVMM server $($VMM.FQDN)."
-
-            $VMMDiagram = Get-AbrVmmInfrastructureDiagram
-            if ($VMMDiagram) {
-                Export-AbrDiagram -DiagramObject $VMMDiagram -MainDiagramLabel "Infrastructure Diagram" -FileName "AsBuiltReport.Microsoft.SCVMM.Infrastructure"
-            } else {
-                Write-PScriboMessage -IsWarning "Unable to generate the Infrastructure Diagram."
-            }
-
             Get-AbrVmmInfrastructure
             Get-AbrVmmNetworking
             Get-AbrVmmLibraryTemplate
             Get-AbrVmmCluster
             Get-AbrVmmHostNHostGroup
+        }
+        $VMMDiagram = Get-AbrVmmInfrastructureDiagram
+        if ($VMMDiagram) {
+            Export-AbrDiagram -Orientation 'Landscape' -DiagramObject $VMMDiagram -MainDiagramLabel "SCVMM Infrastructure Diagram" -FileName "AsBuiltReport.Microsoft.SCVMM.Infrastructure"
+        } else {
+            Write-PScriboMessage -IsWarning "Unable to generate the Infrastructure Diagram."
         }
     }
     #endregion foreach loop
