@@ -19,15 +19,15 @@ function Get-AbrVmmAutoNetSetting {
     )
 
     begin {
-        Write-PScriboMessage "AutoNetworkSettings InfoLevel set at $($InfoLevel.AutoNetworkSettings)."
+        Write-PScriboMessage "Infrastructure InfoLevel set at $($InfoLevel.Infrastructure)."
     }
 
     process {
         try {
-            if ($InfoLevel.AutoNetworkSettings -gt 0) {
+            if ($InfoLevel.Infrastructure -gt 0) {
                 if ($Vmm) {
                     Write-PScriboMessage "Collecting VMM Auto Network information."
-                    Section -Style Heading2 'AutoNetwork Settings' {
+                    Section -Style Heading3 'AutoNetwork Settings' {
                         $VmmServerSettingsInfo = @()
                         foreach ($VmmServerSetting in $Vmm) {
                             $InObj = [Ordered]@{
@@ -40,7 +40,7 @@ function Get-AbrVmmAutoNetSetting {
                             $VmmServerSettingsInfo += [pscustomobject](ConvertTo-HashToYN $InObj)
                         }
 
-                        if ($InfoLevel.AutoNetworkSettings -ge 2) {
+                        if ($InfoLevel.Infrastructure -ge 2) {
                             Paragraph "The following sections detail the configuration of the VMM Auto Network Settings."
                             foreach ($VmmServerSetting in $VmmServerSettingsInfo) {
                                 Section -Style NOTOCHeading4 -ExcludeFromTOC "$($Vmm.FQDN)" {

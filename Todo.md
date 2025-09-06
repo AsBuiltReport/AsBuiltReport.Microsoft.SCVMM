@@ -1,4 +1,4 @@
-[] Add Update Server
+[x] Add Update Server
 [] Add PXE Server
 [] Add vCenter Server
 [] Add Network Service
@@ -7,3 +7,4 @@
     [] Get-SCUserRole
 [] Add Cloud (Get-SCCloud)
 [] Update ReadMe file
+[] Add HostGroup (Get-SCVMHostGroup)

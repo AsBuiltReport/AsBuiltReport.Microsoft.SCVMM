@@ -99,9 +99,7 @@ function Invoke-AsBuiltReport.Microsoft.SCVMM {
                 Write-PScriboMessage -IsWarning "Unable to generate the Infrastructure Diagram."
             }
 
-            Get-AbrVmmServerSetting
-            Get-AbrVmmDBSetting
-            Get-AbrVmmAutoNetSetting
+            Get-AbrVmmInfrastructure
             Get-AbrVmmNetworking
             Get-AbrVmmLibraryTemplate
             Get-AbrVmmCluster

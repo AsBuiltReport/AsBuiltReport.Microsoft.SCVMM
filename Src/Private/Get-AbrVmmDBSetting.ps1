@@ -19,15 +19,15 @@ function Get-AbrVmmDBSetting {
     )
 
     begin {
-        Write-PScriboMessage "DBSettings InfoLevel set at $($InfoLevel.DBSettings)."
+        Write-PScriboMessage "Infrastructure InfoLevel set at $($InfoLevel.Infrastructure)."
     }
 
     process {
         try {
-            if ($InfoLevel.DBSettings -gt 0) {
+            if ($InfoLevel.Infrastructure -gt 0) {
                 if ($Vmm) {
                     Write-PScriboMessage "Collecting VMM Database Settings information."
-                    Section -Style Heading2 'Database Settings' {
+                    Section -Style Heading3 'Database Settings' {
                         $VmmServerSettingsInfo = @()
                         foreach ($VmmServerSetting in $Vmm) {
                             $InObj = [Ordered]@{
@@ -40,7 +40,7 @@ function Get-AbrVmmDBSetting {
                             $VmmServerSettingsInfo += [pscustomobject](ConvertTo-HashToYN $InObj)
                         }
 
-                        if ($InfoLevel.DBSettings -ge 2) {
+                        if ($InfoLevel.Infrastructure -ge 2) {
                             Paragraph "The following sections detail the configuration of the VMM Database Settings."
                             foreach ($VmmServerSetting in $VmmServerSettingsInfo) {
                                 Section -Style NOTOCHeading4 -ExcludeFromTOC "$($Vmm.FQDN)" {

@@ -28,7 +28,6 @@ function Get-AbrVmmLibraryTemplate {
                 Write-PScriboMessage "Collecting VMM Library and Template information."
                 Section -Style Heading1 'Library and Templates' {
                     Paragraph 'The following section details the library and vm templates configured'
-                    Get-AbrVmmLibraryServer
                     Get-AbrVmmLibraryShare
                     Get-AbrVmmVMTemplate
                     Get-AbrVmmGuestOSProfile

@@ -1,4 +1,4 @@
-function Get-AbrVmmServerSetting {
+function Get-AbrVmmServer {
     <#
     .SYNOPSIS
         Used by As Built Report to retrieve Microsoft VMM Server information
@@ -19,15 +19,15 @@ function Get-AbrVmmServerSetting {
     )
 
     begin {
-        Write-PScriboMessage "ServerSettings InfoLevel set at $($InfoLevel.ServerSettings)."
+        Write-PScriboMessage "Infrastructure InfoLevel set at $($InfoLevel.Infrastructure)."
     }
 
     process {
         try {
-            if ($InfoLevel.ServerSettings -gt 0) {
+            if ($InfoLevel.Infrastructure -gt 0) {
                 if ($Vmm) {
                     Write-PScriboMessage "Collecting VMM Server Settings information."
-                    Section -Style Heading2 'Virtual Machine Manager Server' {
+                    Section -Style Heading2 'VMM Server' {
                         $VmmServerSettingsInfo = @()
                         foreach ($VmmServerSetting in $Vmm) {
                             $InObj = [Ordered]@{
@@ -43,12 +43,12 @@ function Get-AbrVmmServerSetting {
                             $VmmServerSettingsInfo += [pscustomobject](ConvertTo-HashToYN $InObj)
                         }
 
-                        if ($InfoLevel.ServerSettings -ge 2) {
+                        if ($InfoLevel.Infrastructure -ge 2) {
                             Paragraph "The following sections detail the configuration of the VMM Server Settings."
                             foreach ($VmmServerSetting in $VmmServerSettingsInfo) {
                                 Section -Style NOTOCHeading4 -ExcludeFromTOC "$($VmmServerSetting.'Server FQDN')" {
                                     $TableParams = @{
-                                        Name = "Server Settings - $($VmmServerSetting.'Server FQDN')"
+                                        Name = "VMM Server Settings - $($VmmServerSetting.'Server FQDN')"
                                         List = $true
                                         ColumnWidths = 40, 60
                                     }
@@ -62,7 +62,7 @@ function Get-AbrVmmServerSetting {
                             Paragraph "The following table summarises the configuration of the VMM Server Settings."
                             BlankLine
                             $TableParams = @{
-                                Name = "Server Settings - $($VmmServerSetting.FQDN)"
+                                Name = "VMM Server Settings - $($VmmServerSetting.FQDN)"
                                 List = $false
                                 Columns = 'Server FQDN', 'IP Address', 'Product Version', 'Server Port'
                                 ColumnWidths = 45, 20, 20, 15
