@@ -25,7 +25,7 @@ function Get-AbrVmmLogicalSwitch {
     process {
         try {
             if ($InfoLevel.Networking -gt 0) {
-                if ($LogicalSwitches = Get-SCLogicalSwitch | Sort-Object -Property Name) {
+                if ($LogicalSwitches = Get-SCLogicalSwitch -VMMServer $ConnectVmmServer | Sort-Object -Property Name) {
                     Write-PScriboMessage "Collecting VMM Logical Switches information."
                     Section -Style Heading3 'Logical Switches' {
                         $VmmLogicalSwitchesInfo = @()

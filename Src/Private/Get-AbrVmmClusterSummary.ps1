@@ -25,7 +25,7 @@ function Get-AbrVmmClusterSummary {
     process {
         try {
             if ($InfoLevel.Clusters -gt 0) {
-                if ($ScVmmClusters = Get-SCVMHostCluster | Sort-Object -Property Name) {
+                if ($ScVmmClusters = Get-SCVMHostCluster -VMMServer $ConnectVmmServer | Sort-Object -Property Name) {
                     Write-PScriboMessage "Collecting VMM Cluster information."
                     $VmmClusterInfo = @()
                     foreach ($ScVmmCluster in $ScVmmClusters) {

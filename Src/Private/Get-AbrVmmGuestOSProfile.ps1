@@ -25,7 +25,7 @@ function Get-AbrVmmGuestOSProfile {
     process {
         try {
             if ($InfoLevel.LibraryTemplates -gt 0) {
-                if ($GuestOSProfiles = Get-SCGuestOSProfile | Sort-Object -Property Name) {
+                if ($GuestOSProfiles = Get-SCGuestOSProfile -VMMServer $ConnectVmmServer | Sort-Object -Property Name) {
                     Write-PScriboMessage "Collecting VMM Guest OS Profiles information."
                     Section -Style Heading3 'Guest OS Profiles' {
                         $VmmGuestOSProfilesInfo = @()

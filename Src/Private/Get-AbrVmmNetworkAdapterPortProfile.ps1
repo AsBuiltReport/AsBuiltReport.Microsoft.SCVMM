@@ -25,7 +25,7 @@ function Get-AbrVmmNetworkAdapterPortProfile {
     process {
         try {
             if ($InfoLevel.Networking -gt 0) {
-                if ($VirtualNetworkAdapterPortProfiles = Get-SCVirtualNetworkAdapterNativePortProfile | Sort-Object -Property Name) {
+                if ($VirtualNetworkAdapterPortProfiles = Get-SCVirtualNetworkAdapterNativePortProfile -VMMServer $ConnectVmmServer | Sort-Object -Property Name) {
                     Write-PScriboMessage "Collecting VMM Network Adapter Port Profiles information."
                     Section -Style Heading3 'Network Adapter Port Profiles' {
                         $VmmNetworkAdapterPortProfileInfo = @()

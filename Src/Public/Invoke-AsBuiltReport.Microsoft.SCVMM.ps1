@@ -103,7 +103,7 @@ function Invoke-AsBuiltReport.Microsoft.SCVMM {
             Get-AbrVmmNetworking
             Get-AbrVmmLibraryTemplate
             Get-AbrVmmCluster
-            Get-AbrVmmHost
+            Get-AbrVmmHostNHostGroup
         }
     }
     #endregion foreach loop

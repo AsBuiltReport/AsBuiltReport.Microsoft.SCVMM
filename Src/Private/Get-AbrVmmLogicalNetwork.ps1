@@ -25,7 +25,7 @@ function Get-AbrVmmLogicalNetwork {
     process {
         try {
             if ($InfoLevel.Networking -gt 0) {
-                if ($LogicalNetworks = Get-SCLogicalNetworkDefinition | Sort-Object -Property Name) {
+                if ($LogicalNetworks = Get-SCLogicalNetworkDefinition -VMMServer $ConnectVmmServer | Sort-Object -Property Name) {
                     Write-PScriboMessage "Collecting VMM Networking information."
                     Section -Style Heading2 'Logical Networks' {
                         $VmmLogicalNetworksInfo = @()

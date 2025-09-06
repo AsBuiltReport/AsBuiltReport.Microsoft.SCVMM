@@ -25,7 +25,7 @@ function Get-AbrVmmUpdateServer {
     process {
         try {
             if ($InfoLevel.Infrastructure -gt 0) {
-                if ($VMMUpdateServers = Get-SCUpdateServer | Sort-Object -Property Name) {
+                if ($VMMUpdateServers = Get-SCUpdateServer -VMMServer $ConnectVmmServer | Sort-Object -Property Name) {
                     Write-PScriboMessage "Collecting VMM Update Servers information."
                     Section -Style Heading3 'Update Servers' {
                         $VmmUpdateServersInfo = @()
