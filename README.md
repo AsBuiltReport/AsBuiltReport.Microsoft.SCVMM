@@ -38,7 +38,7 @@ Please refer to the AsBuiltReport [website](https://www.asbuiltreport.com) for m
 
 ## Sample Report - Custom Style 1
 
-Sample Microsoft SCVMM As Built report HTML file: [Sample Microsoft SCVMM As-Built Report.html](https://htmlpreview.github.io/?https://raw.githubusercontent.com/AsBuiltReport/AsBuiltReport.Microsoft.SCVMM/dev/Samples/Sample%20Microsoft%20Windows%20As%20Built%20Report.html "Sample Microsoft SCVMM As-Built Report")
+Sample Microsoft SCVMM As Built report HTML file: [Sample Microsoft SCVMM As-Built Report.html](https://htmlpreview.github.io/?https://raw.githubusercontent.com/AsBuiltReport/AsBuiltReport.Microsoft.SCVMM/dev/Samples/Sample%20Microsoft%20SCVMM%20As%20Built%20Report.html "Sample Microsoft SCVMM As-Built Report")
 
 # :beginner: Getting Started
 
