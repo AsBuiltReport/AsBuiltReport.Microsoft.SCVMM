@@ -55,9 +55,9 @@ The Microsoft SCVMM As Built Report supports the following SCVMM Server versions
 This report is compatible with the following PowerShell versions;
 
 <!-- ********** Update supported PowerShell versions ********** -->
-| Windows PowerShell 5.1 | PowerShell 7 |
-| :--------------------: | :----------: |
-|   :white_check_mark:   |     :white_check_mark:      |
+| Windows PowerShell 5.1 |    PowerShell 7    |
+| :--------------------: | :----------------: |
+|   :white_check_mark:   | :white_check_mark: |
 
 ## :wrench: System Requirements
 <!-- ********** Update system requirements ********** -->
@@ -142,36 +142,33 @@ The following provides information of how to configure each schema within the re
 
 The **Report** schema provides configuration of the Microsoft SCVMM report information.
 
-| Sub-Schema          | Setting      | Default                           | Description                                                  |
-| ------------------- | ------------ | --------------------------------- | ------------------------------------------------------------ |
+| Sub-Schema          | Setting      | Default                         | Description                                                  |
+| ------------------- | ------------ | ------------------------------- | ------------------------------------------------------------ |
 | Name                | User defined | Microsoft SCVMM As Built Report | The name of the As Built Report                              |
-| Version             | User defined | 1.0                               | The report version                                           |
-| Status              | User defined | Released                          | The report release status                                    |
-| ShowCoverPageImage  | true / false | true                              | Toggle to enable/disable the display of the cover page image |
-| ShowTableOfContents | true / false | true                              | Toggle to enable/disable table of contents                   |
-| ShowHeaderFooter    | true / false | true                              | Toggle to enable/disable document headers & footers          |
-| ShowTableCaptions   | true / false | true                              | Toggle to enable/disable table captions/numbering            |
+| Version             | User defined | 1.0                             | The report version                                           |
+| Status              | User defined | Released                        | The report release status                                    |
+| ShowCoverPageImage  | true / false | true                            | Toggle to enable/disable the display of the cover page image |
+| ShowTableOfContents | true / false | true                            | Toggle to enable/disable table of contents                   |
+| ShowHeaderFooter    | true / false | true                            | Toggle to enable/disable document headers & footers          |
+| ShowTableCaptions   | true / false | true                            | Toggle to enable/disable table captions/numbering            |
 
 ### Options
 
 The **Options** schema allows certain options within the report to be toggled on or off.
 
-| Sub-Schema        | Setting      | Default | Description                              |
-| ----------------- | ------------ | ------- | ---------------------------------------- |
-| SQLLogin          | true / false | false   | Enable sql server login authentication . |
-| SQLUserName       | User defined | empty   | Sql server login Username .              |
-| SQLSecurePassword | User defined | empty   | Sql server login SecureString Password . |
-
-#### Generating a SecureString
-
-```powershell
-PS C:\> "SecurePassword" | ConvertTo-SecureString -AsPlainText -Force | ConvertFrom-SecureString
-01000000d08c9ddf0115d1118c7a00c04fc297eb01000000b3605317d738c346801fbff6596b0d130000
-PS C:\>
-```
-Copy/Paste the output text to the variable SQLSecurePassword
-
-##### Note: Storing any credential in a file can pose a security risk. Use this option at your own risk!
+| Sub-Schema             | Setting      | Default | Description                                                                   |
+| ---------------------- | ------------ | ------- | ----------------------------------------------------------------------------- |
+| DiagramColumnSize      | int          | 3       | Set the diagram node table size                                               |
+| DiagramTheme           | string       | White   | Set the diagram theme (Black/White/Neon)                                      |
+| DiagramWaterMark       | string       | empty   | Set the diagram watermark                                                     |
+| DiagramType            | true / false | true    | Toggle to enable/disable the export of individual diagram diagrams            |
+| EnableDiagrams         | true / false | false   | Toggle to enable/disable infrastructure diagrams                              |
+| EnableDiagramsDebug    | true / false | false   | Toggle to enable/disable diagram debug option                                 |
+| EnableDiagramSignature | true / false | false   | Toggle to enable/disable diagram signature (bottom right corner)              |
+| ExportDiagrams         | true / false | true    | Toggle to enable/disable diagram export option                                |
+| ExportDiagramsFormat   | string array | png     | Set the format used to export the infrastructure diagram (dot, png, pdf, svg) |
+| SignatureAuthorName    | string       | empty   | Set the signature author name                                                 |
+| SignatureCompanyName   | string       | empty   | Set the signature company name                                                |
 
 ### InfoLevel
 
@@ -189,16 +186,11 @@ The table below outlines the default and maximum **InfoLevel** settings for each
 
 | Sub-Schema      | Default Setting | Maximum Setting |
 | --------------- | :-------------: | :-------------: |
-| Hardware        |        1        |        1        |
-| OperatingSystem |        1        |        2        |
-| Storage         |        1        |        1        |
+| Cluster         |        1        |        1        |
+| Host            |        1        |        2        |
+| Infrastructure  |        1        |        1        |
+| LibraryTemplate |        1        |        2        |
 | Networking      |        1        |        1        |
-| IIS             |        1        |        1        |
-| HyperV          |        1        |        1        |
-| DHCP            |        1        |        2        |
-| DNS             |        1        |        2        |
-| FailOverCluster |        1        |        2        |
-| SQLServer       |        1        |        2        |
 
 ### Healthcheck
 
@@ -210,21 +202,20 @@ There are a few examples listed below on running the AsBuiltReport script agains
 
 ```powershell
 
-# Generate a Microsoft SCVMM As Built Report for Server 'win-server-01v.contoso.local' using specified credentials. Export report to HTML & DOCX formats. Use default report style. Append timestamp to report filename. Save reports to 'C:\Users\Jon\Documents'
-PS C:\> New-AsBuiltReport -Report Microsoft.SCVMM -Target 'win-server-01v.contoso.local' -Username 'administrator@contoso.local' -Password 'P@ssw0rd' -Format Html,Word -OutputFolderPath 'C:\Users\Jon\Documents' -Timestamp
+# Generate a Microsoft SCVMM As Built Report for Server 'scvmm-server-01v.contoso.local' using specified credentials. Export report to HTML & DOCX formats. Use default report style. Append timestamp to report filename. Save reports to 'C:\Users\Jon\Documents'
+PS C:\> New-AsBuiltReport -Report Microsoft.SCVMM -Target 'scvmm-server-01v.contoso.local' -Username 'administrator@contoso.local' -Password 'P@ssw0rd' -Format Html,Word -OutputFolderPath 'C:\Users\Jon\Documents' -Timestamp
 
-# Generate a Microsoft SCVMM As Built Report for Server 'win-server-01v.contoso.local' using specified credentials and report configuration file. Export report to Text, HTML & DOCX formats. Use default report style. Save reports to 'C:\Users\Jon\Documents'. Display verbose messages to the console.
-PS C:\> New-AsBuiltReport -Report Microsoft.SCVMM -Target 'win-server-01v.contoso.local' -Username 'administrator@contoso.local' -Password 'P@ssw0rd' -Format Text,Html,Word -OutputFolderPath 'C:\Users\Jon\Documents' -ReportConfigFilePath 'C:\Users\Jon\AsBuiltReport\AsBuiltReport.Microsoft.SCVMM.json' -Verbose
+# Generate a Microsoft SCVMM As Built Report for Server 'scvmm-server-01v.contoso.local' using specified credentials and report configuration file. Export report to Text, HTML & DOCX formats. Use default report style. Save reports to 'C:\Users\Jon\Documents'. Display verbose messages to the console.
+PS C:\> New-AsBuiltReport -Report Microsoft.SCVMM -Target 'scvmm-server-01v.contoso.local' -Username 'administrator@contoso.local' -Password 'P@ssw0rd' -Format Text,Html,Word -OutputFolderPath 'C:\Users\Jon\Documents' -ReportConfigFilePath 'C:\Users\Jon\AsBuiltReport\AsBuiltReport.Microsoft.SCVMM.json' -Verbose
 
-# Generate a Microsoft SCVMM As Built Report for Server 'win-server-01v.contoso.local' using stored credentials. Export report to HTML & Text formats. Use default report style. Highlight environment issues within the report. Save reports to 'C:\Users\Jon\Documents'.
+# Generate a Microsoft SCVMM As Built Report for Server 'scvmm-server-01v.contoso.local' using stored credentials. Export report to HTML & Text formats. Use default report style. Highlight environment issues within the report. Save reports to 'C:\Users\Jon\Documents'.
 PS C:\> $Creds = Get-Credential
-PS C:\> New-AsBuiltReport -Report Microsoft.SCVMM -Target 'win-server-01v.contoso.local' -Credential $Creds -Format Html,Text -OutputFolderPath 'C:\Users\Jon\Documents' -EnableHealthCheck
+PS C:\> New-AsBuiltReport -Report Microsoft.SCVMM -Target 'scvmm-server-01v.contoso.local' -Credential $Creds -Format Html,Text -OutputFolderPath 'C:\Users\Jon\Documents' -EnableHealthCheck
 
-# Generate a Microsoft SCVMM As Built Report for Server 'win-server-01v.contoso.local' using specified credentials. Export report to HTML & DOCX formats. Use default report style. Reports are saved to the user profile folder by default. Attach and send reports via e-mail.
-PS C:\> New-AsBuiltReport -Report Microsoft.SCVMM -Target 'win-server-01v.contoso.local' -Username 'administrator@contoso.local' -Password 'P@ssw0rd' -Format Html,Word -OutputFolderPath 'C:\Users\Jon\Documents' -SendEmail
+# Generate a Microsoft SCVMM As Built Report for Server 'scvmm-server-01v.contoso.local' using specified credentials. Export report to HTML & DOCX formats. Use default report style. Reports are saved to the user profile folder by default. Attach and send reports via e-mail.
+PS C:\> New-AsBuiltReport -Report Microsoft.SCVMM -Target 'scvmm-server-01v.contoso.local' -Username 'administrator@contoso.local' -Password 'P@ssw0rd' -Format Html,Word -OutputFolderPath 'C:\Users\Jon\Documents' -SendEmail
 ```
 
 ## :x: Known Issues
 
 - Issues with WinRM when using the IP address instead of the "Fully Qualified Domain Name".
-- The report provides the ability to extract the configuration of the DNS/DHCP/Hyper-V/IIS/FailOver-Cluster services. In order to obtain this information it is required that the servers running these services have the corresponding powershell modules installed.
