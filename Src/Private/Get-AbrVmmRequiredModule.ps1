@@ -6,9 +6,9 @@ function Get-AbrVmmRequiredModule {
         Documents the configuration of Veeam VMM in Word/HTML/Text formats using PScribo.
     .NOTES
         Version:        0.1.1
-        Author:         Jonathan Colon
-        Twitter:        @jcolonfzenpr
-        Github:         rebelinux
+        Author:         AsBuiltReport Organization
+        Twitter:        @AsBuiltReport
+        Github:         AsBuiltReport
         Credits:        Iain Brighton (@iainbrighton) - PScribo module
 
     .LINK
