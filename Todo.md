@@ -1,6 +1,6 @@
 [x] Add Update Server
 [] Add PXE Server
-[] Add vCenter Server
+[x] Add vCenter Server
 [] Add Network Service
 [x] Add configuration settings
     [x] Get-SCRunAsAccount
