@@ -26,6 +26,8 @@
     <a href='https://ko-fi.com/B0B7DDGZ7' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 </p>
 
+#### This project is community maintained and has no sponsorship from Microsoft, its employees or any of its affiliates.
+
 # Microsoft SCVMM As Built Report
 
 Microsoft SCVMM As Built Report is a PowerShell module which works in conjunction with [AsBuiltReport.Core](https://github.com/AsBuiltReport/AsBuiltReport.Core).
@@ -55,9 +57,9 @@ The Microsoft SCVMM As Built Report supports the following SCVMM Server versions
 This report is compatible with the following PowerShell versions;
 
 <!-- ********** Update supported PowerShell versions ********** -->
-| Windows PowerShell 5.1 |    PowerShell 7    |
-| :--------------------: | :----------------: |
-|   :white_check_mark:   | :x: |
+| Windows PowerShell 5.1 | PowerShell 7 |
+| :--------------------: | :----------: |
+|   :white_check_mark:   |     :x:      |
 
 ## :wrench: System Requirements
 <!-- ********** Update system requirements ********** -->

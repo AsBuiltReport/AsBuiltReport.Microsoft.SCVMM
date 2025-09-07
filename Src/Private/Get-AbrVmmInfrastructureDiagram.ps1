@@ -56,7 +56,7 @@ function Get-AbrVmmInfrastructureDiagram {
                 $VMMVirtualizationManagers = Get-SCVirtualizationManager -VMMServer $ConnectVmmServer | Sort-Object -Property Name
 
                 $VMMServerAdditionalInfo = [pscustomobject][Ordered]@{
-                    'IP Address' = (Get-NetIPAddress -CimSession $VMMCimSession -AddressFamily IPv4 | Where-Object { $_.IPAddress -notlike "127.0.0.1" })[0].IPAddress
+                    'IP Address' = Get-NodeIP -Hostname $VMM.FQDN
                     'Server Port' = $VMM.Port
                     'Version' = $VMM.ProductVersion
                     'Role' = "VMM Server"
