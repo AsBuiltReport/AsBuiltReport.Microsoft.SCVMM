@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ##### This project is community maintained and has no sponsorship from Microsoft, its employees or any of its affiliates.
 
+## [0.1.2] - 2025-09-XX
+
+### Added
+
+
+### Changed
+
 ## [0.1.1] - 2025-09-06
 
 ### Added
